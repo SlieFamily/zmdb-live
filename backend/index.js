@@ -104,7 +104,15 @@ router.get('/authors', async ctx => {
 router.get('/organizations/:organizationId/authors', async ctx => {
     ctx.body = await ctx.authorService.findByOrganizationId(ctx);
 });
-
+router.get('/authorsUid', async ctx => {
+    const { uid } = ctx.query;
+    if (!uid) {
+        ctx.status = 400;
+        ctx.body = { error: 'uid parameter is required' };
+        return;
+    }
+    ctx.body = await ctx.authorService.findByUid(ctx);
+});
 
 /**
  * clips

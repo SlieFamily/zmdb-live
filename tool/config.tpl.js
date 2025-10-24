@@ -22,5 +22,6 @@ export default {
     },
     push: {
         key: '你的pushdeer key'
-    }
+    },
+    token: '用于API自动上传的token，保持和backend的管理员一致'
 }

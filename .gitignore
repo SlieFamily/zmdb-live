@@ -116,6 +116,6 @@ frontend/build/
 frontend/yarn.lock
 
 # Local live & record files
-雪糕cheese/
+/lives
 
 

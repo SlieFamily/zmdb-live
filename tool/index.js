@@ -9,6 +9,7 @@ import { errorHandler } from './middlewares.js';
 import SegmentService from './SegmentService.js';
 import SubtitleService from './SubtitleService.js';
 import WbiService from './WbiService.js';
+import RecorderService from './RecorderService.js';
 
 (async () => {
     const app = new Koa({ proxy: true });
@@ -19,6 +20,7 @@ import WbiService from './WbiService.js';
     app.context.segmentService = new SegmentService();
     app.context.subtitleService = new SubtitleService();
     app.context.wbiService = new WbiService();
+    app.context.hookService = new RecorderService();
 
     /**
      * hello
@@ -46,6 +48,13 @@ import WbiService from './WbiService.js';
      */
     router.get('/wbi', async ctx => {
         ctx.body = await ctx.wbiService.encode(ctx);
+    });
+
+    /**
+     * recoder webhook
+     */
+    router.post('/webhook', async ctx => {
+        ctx.body = await ctx.hookService.handle(ctx);
     });
 
     app.use(koaBody({ 

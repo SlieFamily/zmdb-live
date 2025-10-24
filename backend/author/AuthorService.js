@@ -18,10 +18,6 @@ export default class AuthorService {
         let author = {};
         // 检查参数合法性
         const organizationId = entity.organizationId;
-        //鉴权
-        if (ctx.state.auth.organizationId !== 0 && ctx.state.auth.organizationId !== organizationId) {
-            throw error.auth.Unauthorized;
-        }
         if (!ctx.organizationDao.findById(organizationId)) {
             throw error.organization.NotFound;
         }
@@ -108,6 +104,12 @@ export default class AuthorService {
     findById = (ctx) => {
         const id = parseInt(ctx.request.params.id);
         return ctx.authorDao.findById(id);
+    }
+
+    findByUid = (ctx) => {
+        const { uid } = ctx.query;
+        console.log(`Searching for author with UID: ${uid}`);
+        return ctx.authorDao.findByUid(String(uid));
     }
 
     findByOrganizationId = (ctx) => {
