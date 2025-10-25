@@ -192,8 +192,8 @@ app.use(logger((str, args) => {
 app.use(cors()); // 允许所有来源访问该服务器的资源
 app.use(errorHandler);
 app.use(router.routes());
-app.use(mount('/records', serve(join(__dirname, '../records'))));
-app.use(mount('/lives', serve(join(__dirname, '../lives'))));
+// app.use(mount('/records', serve(join(__dirname, '../records'))));
+// app.use(mount('/lives', serve(join(__dirname, '../lives'))));
 app.use(mount('/clip/segment', serve(join(__dirname, '../clip/segment'))));
 
 app.listen(config.web.port);

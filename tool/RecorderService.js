@@ -96,7 +96,7 @@ export default class RecorderService {
     handleFileClosed = async (eventData, ctx) => {
         try {
             const sessionId = eventData.SessionId;
-            const clipId = this.sessionClipMap.get(sessionId);
+            const clipId = this.sessionClipMap.get(sessionId).clipId;
 
             if (!clipId) {
                 console.warn(`No clip ID found for session: ${sessionId}`);
@@ -108,13 +108,19 @@ export default class RecorderService {
             console.log(`Updating clip ${clipId} for session ${sessionId} to type 3`);
             
             // 构建请求数据
-            const clipData = await ZimuApi.findClipById(clipId);
-            clipData.type = 3; // 已结束
-            delete clipData.id; // 删除ID以防冲突
+            const clipRawData = await ZimuApi.findClipById(clipId);
+            const clipData = {
+                authorId: clipRawData.authorId,
+                title: clipRawData.title,
+                datetime: clipRawData.datetime,
+                cover: clipRawData.cover,
+                type: 3 // 本地源
+            };
 
             // 发送 PUT 请求更新 clip
             const response = await axios.put(`${config.zimu.url}/api/clips/${clipId}`, clipData, {
                 headers: {
+                    'Authorization': `Bearer ${config.token}`,
                     'Content-Type': 'application/json'
                 }
             });
