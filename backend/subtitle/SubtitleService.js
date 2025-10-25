@@ -1,4 +1,5 @@
 import { pinyin } from 'pinyin-pro';
+import fs from 'fs';
 import error from '../error.js'
 import validation from '../validation.js';
 import { mark, parse, fromMicroseconds } from '../utils.js';
@@ -8,11 +9,12 @@ export default class SubtitleService {
     /**
      * @param {clipId} 作品id
      * @param {content} 字幕srt内容 
+     * @param {path}    字幕文件路径
      * @returns 
      */
     insert = async (ctx) => {
         const clipId = parseInt(ctx.params.clipId);
-        let content = ctx.request.body || '';
+        let { content, path } = ctx.request.body || {};
         // 检查参数合法性
         const clip = ctx.clipDao.findById(clipId);
         if (!clip) {
@@ -24,8 +26,19 @@ export default class SubtitleService {
             throw error.author.NotFound;
         }
 
-        if (ctx.state.auth.organizationId !== 0 && ctx.state.auth.organizationId !== author.organizationId) {
+        if (!ctx.userService.isAdmin(ctx.state.user)) {
             throw error.auth.Unauthorized;
+        }
+
+        // 若传的是文件路径而不是内容，则从文件读取
+        if (!content && path) {
+            if (!fs.existsSync(path)) {
+                throw new Error(`Subtitle file not found: ${path}`);
+            }
+            content = fs.readFileSync(path, 'utf8');
+        }
+        if (!content) {
+            throw new Error('No subtitle content or path provided');
         }
 
         // \r\n全部转换为\n，换行符统一化
